@@ -1,52 +1,7 @@
 import math
-import nltk
 import os
 import re
 import csv
-
-vocab = set()
-word_count = 0
-
-'''
-def train_nb(training_documents, mode):
-    global pos_allcount, neg_allcount
-    global pos_likelihood, neg_likelihood
-
-    for doc in training_documents:
-        t = doc.split()
-        score = int(t[0])
-        for word in t[1:]:
-            index, count = word.split(':')
-            # print('index: '+index)
-            if mode == "pos":
-                if pos_counts[int(index)] == 0:
-                    pos_counts[int(index)] = 1
-                pos_counts[int(index)] += int(count)
-                pos_allcount += int(count)
-            elif mode == "neg":
-                if neg_counts[int(index)] == 0:
-                    neg_counts[int(index)] = 1
-                neg_counts[int(index)] += int(count)
-                neg_allcount += int(count)
-            # print(score, pos_counts)
-
-    if mode == "pos":
-        for c in pos_counts:
-            if c == 0:
-                print(str(c) + "is zero")
-        pos_likelihood = list(map(lambda t: t / pos_allcount, pos_counts))
-        print(pos_likelihood)
-        print("all counts: " + str(pos_allcount))
-    elif mode == "neg":
-        for c in neg_counts:
-            if c == 0:
-                print(str(c) + "is zero")
-        neg_likelihood = list(map(lambda t: t / neg_allcount, neg_counts))
-        print(neg_likelihood)
-        print("all counts: " + str(neg_allcount))
-
-    return
-'''
 
 def classify_nb():
     truepos = 0
@@ -86,9 +41,8 @@ def classify_nb():
                 pos_score += pos_likelihood[word]
                 neg_score += neg_likelihood[word]
 
-            print('score')
-            print(pos_score, neg_score)
-            if(pos_score > neg_score):
+            print("pos: "+str(pos_score), "neg: "+str(neg_score))
+            if pos_score > neg_score:
                 if mode == "pos":
                     truepos+=1
                 else:
@@ -98,7 +52,8 @@ def classify_nb():
                     falseneg+=1
                 else:
                     trueneg+=1
-
+    print("total: "+str(25000))
+    print("processed: "+str(trueneg+truepos+falseneg+falsepos))
     print("acc: "+str((trueneg+truepos)/(trueneg+truepos+falseneg+falsepos)))
     print("precision: "+str(truepos/(truepos+falsepos)))
     print("recall: "+str(truepos/(truepos+falseneg)))
@@ -108,12 +63,6 @@ def classify_nb():
 def train_nb():
     pos_counts = {}
     neg_counts = {}
-
-    global vocab
-
-    vocab_f = open('aclImdb/imdb.vocab')
-    word_list = set(vocab_f.read().splitlines())
-    vocab_f.close()
 
     for mode in ("neg", "pos"):
         filepath = "aclImdb/train/" + mode
@@ -135,7 +84,6 @@ def train_nb():
                     neg_counts[word] += 1
 
             # print(words)
-            vocab.update(words)
             f.close()
 
     pos_likelihood = dict(map(lambda t: (t[0], math.log(t[1]/ len(pos_counts))), pos_counts.items()))
@@ -152,8 +100,7 @@ def train_nb():
     for key, val in neg_likelihood.items():
         w.writerow([key, val])
     f.close()
-    #print(vocab)
-    #
+
     # print(len(vocab))
     # print(len(neg_counts))
     # print(len(pos_counts))
