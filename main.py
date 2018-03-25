@@ -100,6 +100,8 @@ def classify_nb():
                     trueneg+=1
 
     print("acc: "+str((trueneg+truepos)/(trueneg+truepos+falseneg+falsepos)))
+    print("precision: "+str(truepos/(truepos+falsepos)))
+    print("recall: "+str(truepos/(truepos+falseneg)))
     return
 
 
