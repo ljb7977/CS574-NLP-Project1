@@ -15,9 +15,6 @@ def get_stop_word():
     f_stopwords = open("stop-word-list.csv", encoding='UTF-8')
     stopwords = f_stopwords.readline().split(", ")
     f_stopwords.close()
-    print("stopwords")
-    print(stopwords)
-
 
 def tokenizer(line):
     global stopwords
@@ -27,7 +24,6 @@ def tokenizer(line):
     words = re.sub("(<.*?>|[^a-zA-Z'])+", ' ', words).split()
 
     words = [item for item in words if item not in stopwords]
-    # print(words)
     return words
 
 def classify_nb():
@@ -96,12 +92,13 @@ def classify_nb():
 
     target_names = ["neg", 'pos']
 
+    '''
     print("total: " + str(25000))
     print("processed: " + str(trueneg + truepos + falseneg + falsepos))
     print("acc: " + str((trueneg + truepos) / (trueneg + truepos + falseneg + falsepos)))
     print("precision: " + str(truepos / (truepos + falsepos)))
     print("recall: " + str(truepos / (truepos + falseneg)))
-
+    '''
     print(classification_report(y_true, y_pred, target_names=target_names))
     return
 
@@ -141,7 +138,6 @@ def train_nb():
                 elif mode == "neg":
                     neg_counts[word] += 1
 
-            # print(words)
             f.close()
 
     doc_count = pos_doc_count+neg_doc_count
@@ -163,13 +159,6 @@ def train_nb():
     for key, val in neg_likelihood.items():
         w.writerow([key, val])
     f.close()
-
-    # print(len(vocab))
-    # print(len(neg_counts))
-    # print(len(pos_counts))
-    # print(pos_likelihood)
-    # print(neg_likelihood)
-    # print(vocab - word_list)
 
 
 if __name__ == "__main__":
