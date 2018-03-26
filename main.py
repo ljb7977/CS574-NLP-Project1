@@ -52,13 +52,11 @@ def test():
 
     for mode in classes:
         filepath = "aclImdb/test/" + mode + "/"
-        for file in sorted(os.listdir(filepath),
+        for filename in sorted(os.listdir(filepath),
                            key=lambda x: (int(re.sub('\D(.*)', '', x)), x)):
-            document = open(filepath + file, encoding='UTF-8')
 
-            print("classifying "+file)
-            estim_class = classify_nb(document)
-            document.close()
+            print("classifying "+filename)
+            estim_class = classify_nb(filepath, filename)
 
             if estim_class == "pos":
                 y_pred.append("pos")
@@ -79,7 +77,7 @@ def test():
 
     precision_pos = truepos / (truepos + falsepos)
     recall_pos = truepos / (truepos + falseneg)
-    print("Class pos")
+    print("\nClass pos")
     print("precision: ", round(precision_pos, 2))
     print("recall: ", round(recall_pos, 2))
     print("F1: ", round(2*precision_pos*recall_pos/(precision_pos+recall_pos), 2))
@@ -94,10 +92,12 @@ def test():
     #print(classification_report(y_true, y_pred, target_names=classes))
     return
 
-def classify_nb(document):
+def classify_nb(filepath, filename):
     global pos_likelihood
     global neg_likelihood
+    document = open(filepath + filename, encoding='UTF-8')
     words = tokenizer(document.readline())
+    document.close()
     new_words = []
     for word in words:
         if word in pos_likelihood.keys():
@@ -111,7 +111,7 @@ def classify_nb(document):
         pos_score += pos_likelihood[word]
         neg_score += neg_likelihood[word]
 
-    #print(file + " pos: " + str(pos_score), "neg: " + str(neg_score))
+    #print(filename + " pos: " + str(pos_score), "neg: " + str(neg_score))
 
     if pos_score > neg_score:
         return "pos"
@@ -133,8 +133,7 @@ def train_nb():
         for file in sorted(os.listdir(filepath),
                            key=lambda x: (int(re.sub('\D(.*)', '', x)), x)):
             f = open(filepath + '/' + file, encoding='UTF-8')
-            print(filepath + file)
-
+            print("training: ", filepath + '/' + file)
             words = tokenizer(f.readline())
 
             if mode == "pos":
